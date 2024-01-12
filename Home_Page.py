@@ -54,14 +54,14 @@ nokia_cells=9249
 #======= Read database data and create dataframes ========#
 @st.cache_data
 def get_data(columns, table):
-    return pd.read_sql(f'SELECT {columns} FROM {table}', engine)
+    return pd.read_sql(f"SELECT {columns} FROM {table}", engine)
 
 if st.toggle('Show Tables'):
-    tables=pd.read_sql('SHOW FULL TABLES;', engine)
+    tables=pd.read_sql('SELECT * FROM pg_catalog.pg_tables;', engine)
     tables
 
-filter_columns='SiteId, SiteName, AlarmName, FormattedDatetime, AlarmInfo, FilterIdentifier'
-database_columns ='SiteId, Office, 2G_Cells, 3G_Cells, 4G_Cells, Cascaded'
+filter_columns='"SiteId", "SiteName", "AlarmName", "FormattedDatetime", "AlarmInfo", "FilterIdentifier"'
+database_columns ='"SiteId", "Office", "2G_Cells", "3G_Cells", "4G_Cells", "Cascaded"'
 filters = get_data(filter_columns,filter_table)
 sites_database = get_data(database_columns, database_table)
 
