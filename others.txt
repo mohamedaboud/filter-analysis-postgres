@@ -1,0 +1,191 @@
+#======= Split Dataframes ========#
+UniqueNames = filters.FilterIdentifier.unique()
+DataFrameDict = {elem : pd.DataFrame() for elem in UniqueNames}
+for key in DataFrameDict.keys():
+    DataFrameDict[key] = filters[:][filters.FilterIdentifier == key]
+    key
+    #DataFrameDict[key]
+
+DataFrameDict[UniqueNames[0]]
+
+
+
+selected_filter = st.multiselect('Select Filter', options=n_df['FilterIdentifier'].unique(), default=n_df['FilterIdentifier'].unique().max())
+
+n_df = n_df.query(
+    "FilterIdentifier == @selected_filter"
+)
+
+
+st.text('Please filter results')
+
+selected_filter = st.multiselect('Select Filter', options=n_df['FilterIdentifier'].unique(), default=n_df['FilterIdentifier'].unique().max())
+
+n_df = n_df.query(
+    "FilterIdentifier == @selected_filter"
+)
+
+
+test1= n_df.groupby(['SiteId','AlarmName']).apply(lambda x: x[(x.AlarmName=='BTS O&M LINK FAILURE')|(x.AlarmName=='WCDMA BASE STATION OUT OF USE')])
+test1
+
+n_df_g = n_df.groupby('SiteId')['AlarmName'].apply(lambda x: x[x == 'BCCH MISSING'].count() + x[x == 'WCDMA CELL OUT OF USE'].count())
+
+
+#n_df_environmental= n_df.query('AlarmName == "BASE STATION EXTERNAL ALARM NOTIFICATION"')
+#n_df_down= n_df.query('AlarmName == "BTS O&M LINK FAILURE" or AlarmName == "WCDMA BASE STATION OUT OF USE" or AlarmName == "NE3SWS AGENT NOT RESPONDING TO REQUESTS"')
+#n_df_down_hybrid= n_df.query('AlarmName == "BTS O&M LINK FAILURE" or AlarmName == "WCDMA BASE STATION OUT OF USE"')
+
+# n_df_down_4G= n_df.query('AlarmName == "NE3SWS AGENT NOT RESPONDING TO REQUESTS"')
+
+
+n_df_cells_hybrid= n_df.query('AlarmName == "BCCH MISSING" or AlarmName == "WCDMA CELL OUT OF USE"')
+
+
+#unique_down_sites=n_df_down['SiteId'].nunique()
+#unique_down_sites_hybrid=n_df_down_hybrid['SiteId'].nunique()
+# unique_down_sites_4G=n_df_down_4G['SiteId'].nunique()
+
+
+unique_down_sites_2G=n_df_down_2G['SiteId'].nunique()
+unique_down_sites_3G=n_df_down_3G['SiteId'].nunique()
+
+
+
+test1= n_df[['SiteId', 'FilterIdentifier','AlarmName', 'final_2G', 'final_3G']].groupby(['SiteId','FilterIdentifier']).apply(lambda x: x[(x.AlarmName=='BTS O&M LINK FAILURE')|(x.AlarmName=='WCDMA BASE STATION OUT OF USE')])
+
+
+test2=test1[['SiteId', 'FilterIdentifier', 'final_2G', 'final_3G']].drop_duplicates()
+
+
+# n_df_down_pivot= pd.pivot_table(n_df_down, values='SiteName', index='SiteId', columns='AlarmName', aggfunc='count', margins = True,margins_name = 'Total')
+# n_df_down_pivot = n_df_down_pivot.assign(sortkey=n_df_down_pivot.index == 'Total')\
+#                 .sort_values(['sortkey','Total'], ascending=[True, False])\
+#                 .drop('sortkey', axis=1)
+# n_df_down_pivot = n_df_down_pivot.reset_index(drop = False)
+
+# n_df_down_pivot.rename(columns = {'BTS O&M LINK FAILURE':'2G', 'WCDMA BASE STATION OUT OF USE':'3G','NE3SWS AGENT NOT RESPONDING TO REQUESTS':'4G'}, inplace = True)
+# n_df_down_pivot= n_df_down_pivot[["SiteId","2G","3G","4G"]]
+# # n_df_down_pivot['2G'][n_df_down_pivot['2G']==1] = 'Yes'
+# n_df_down_pivot_time= pd.pivot_table(n_df_down, values='FormattedDatetime', index='SiteId', columns='AlarmName')
+
+
+# n_df_down_pivot_time = n_df_down_pivot_time.reset_index(drop = False)
+
+# n_df_down_pivot_time.rename(columns = {'BTS O&M LINK FAILURE':'2G', 'WCDMA BASE STATION OUT OF USE':'3G','NE3SWS AGENT NOT RESPONDING TO REQUESTS':'4G'}, inplace = True)
+# n_df_down_pivot_time= n_df_down_pivot_time[["SiteId","2G","3G","4G"]]
+
+#======= End ========#
+# AgGrid(n_df, gridOptions=goo, height=400)
+
+
+
+
+#======= AgGrid configuration ========#
+gb = GridOptionsBuilder.from_dataframe(n_df)
+
+gb.configure_default_column(
+    resizable=True,
+    filterable=True,
+    sortable=True,
+    editable=False,
+)
+goo = gb.build()
+
+
+
+
+
+
+# fig = go.Figure(data=[go.Table(
+#     header=dict(values=list(n_df.columns),
+#                 align='left'),
+#     cells=dict(values=[n_df.SiteName, n_df.Severity, n_df.AlarmName, n_df.AlarmTime, n_df.AlarmId, n_df.AlarmSn, n_df.AlarmInfo, n_df.SiteId, n_df.FormattedDatetime],
+#                align='left'))
+# ])
+# ['SiteName', 'Severity', 'AlarmName', 'AlarmTime', 'AlarmId', 'AlarmSn', 'AlarmInfo']
+# st.plotly_chart(fig, use_container_width=False)
+#======= Environmental ========#
+st.markdown('Environmental')
+
+#======= Down Sites ========#
+st.markdown('Down')
+
+#down_fig = px.bar(n_df_down_pivot_2, x='AlarmName', y=['Banisuief', 'Fayoum'], text_auto='.1s', color= ['AlarmName', 'Banisuief', 'Fayoum'])
+# n_df['F_2G_Cells'] = n_df.groupby('SiteFilterIdentifier')['AlarmName'].apply(lambda x: x[x == 'BCCH MISSING'].count())
+# st.write(36)
+# n_df['F_3G_Cells'] = n_df.groupby('SiteFilterIdentifier')['AlarmName'].apply(lambda x: x[x == 'WCDMA CELL OUT OF USE'].count())
+
+
+
+plot.update_traces(marker=dict(color=px.colors.qualitative.Prism),)
+
+
+
+
+
+# # n_df_down_pivot_3= pd.pivot_table(n_df_down, values='DownHours', index='SiteId', columns='AlarmName', aggfunc='sum')
+
+# # n_df_down_pivot_3 = n_df_down_pivot_3.reset_index(drop = False)
+# # n_df_down_pivot_3
+
+# # plot = go.Figure(data=[go.Bar(
+# #     name ='2G',
+# #     x = n_df_down_pivot_3.SiteId,
+# #     y = n_df_down_pivot_3['BTS O&M LINK FAILURE'],
+# #     text=n_df_down_pivot_3['BTS O&M LINK FAILURE'].round(decimals = 2),
+# #     marker_color='red'
+# #    ),
+# #     go.Bar(
+# #     name ='3G',
+# #     x = n_df_down_pivot_3.SiteId,
+# #     y = n_df_down_pivot_3['WCDMA BASE STATION OUT OF USE'],
+# #     text=n_df_down_pivot_3['WCDMA BASE STATION OUT OF USE'].round(decimals = 2),
+# #     marker_color='blue'
+# #    )
+# # ])
+ 
+# # st.plotly_chart(plot, use_container_width=False)
+
+plot = go.Figure(data=[go.Bar(
+    name ='2G Cells',
+    x = n_df_down_pivot_3.SiteId,
+    y = n_df_down_pivot_3['2G'],
+    text=n_df_down_pivot_3['2G'],
+    textposition="outside",
+    textfont=dict(
+        family="sans serif",
+        size=18,
+        color="crimson"
+    ),
+
+, margins = True,margins_name = 'Total'
+
+# n_df_down_pivot_2 = n_df_down_pivot_2.assign(sortkey=n_df_down_pivot_2.index == 'Total')\
+#                 .sort_values(['sortkey','Total'], ascending=[True, False])\
+#                 .drop('sortkey', axis=1)
+
+# n_df_down_pivot_3 = n_df_down_pivot_3.assign(sortkey=n_df_down_pivot_3.index == 'Total')\
+#                 .sort_values(['sortkey','Total'], ascending=[True, False])\
+#                 .drop('sortkey', axis=1)
+
+
+
+
+def highlight_violated(s, threshold, column):
+    is_max = pd.Series(data=False, index=s.index)
+    is_max[column] = s.loc[column]
+    if is_max[column] >= 1 and is_max[column] < 4:
+        return ['background-color: yellow; color: red; font-weight: bold;' if is_max.any() else '' for v in is_max]
+    elif is_max[column] >= 4:
+        return ['background-color: red; color: white; font-weight: bold;' if is_max.any() else '' for v in is_max]
+    else:
+        return ['background-color: lightgreen; color: red; font-weight: bold' if is_max.any() else '' for v in is_max]
+#down_cells.style.set_properties(color="green", align="right")
+    
+down_cells=down_cells.style.set_properties(**{'background-color': 'black',                                                   
+                                    'color': 'lawngreen',                       
+                                    'border': '3px dashed white'})
+#down_cells.style.bar(subset=['Aging'], color='#d65f5f', vmax=down_cells['Aging'].max(), vmin=down_cells['Aging'].min()) 
+#down_cells=down_cells.style.apply(highlight_violated, threshold=3.0, column='Aging', axis=1)
+#down_cells

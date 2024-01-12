@@ -1,0 +1,14 @@
+pandas
+streamlit
+datetime
+datetime
+plotly
+plotly.express
+streamlit_extras
+mysql.connector
+sqlalchemy
+pymysql
+numpy
+dataframe_image
+openpyxl
+xlrd
