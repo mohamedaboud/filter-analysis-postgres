@@ -12,3 +12,5 @@ numpy
 dataframe_image
 openpyxl
 xlrd
+pygwalker
+psycopg2
