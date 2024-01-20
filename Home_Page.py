@@ -263,14 +263,14 @@ plot = go.Figure(data=[go.Bar(
     x = n_df_down_sites_pivot.AlarmName,
     y = n_df_down_sites_pivot.Banisuief,
     text=n_df_down_sites_pivot.Banisuief,
-    marker_color='#a9def9'
+    marker_color='#2553d2'
    ),
     go.Bar(
     name ='Fayoum',
     x = n_df_down_sites_pivot.AlarmName,
     y = n_df_down_sites_pivot.Fayoum,
     text=n_df_down_sites_pivot.Fayoum,
-    marker_color='#fcf6bd'
+    marker_color='#e61d61'
    )
 ])
 plot.update_layout(
