@@ -22,13 +22,22 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 st.set_page_config(page_title = "Home Page", layout="wide")
 
+# st.markdown(
+#     """
+#     <style>
+#         footer {display: none}
+#         [data-testid="stHeader"] {display: none}
+#     </style>
+#     """, unsafe_allow_html = True
+# )
+
 with open('style.css') as f:
-    st.markdown(f'<style>{f.read}</style>', unsafe_allow_html=True)
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html = True)
 
 colored_header(
-        label="Nokia Filter",
+        label="Nokia Hourly Filter Dashboard",
         description="",
-        color_name="violet-70",
+        color_name="red-70",
 )
 
 identifier= 'remote_datbase_secrets'
@@ -56,11 +65,11 @@ nokia_cells=9249
 def get_data(columns, table):
     return pd.read_sql(f"SELECT {columns} FROM {table}", engine)
 
-if st.toggle('Show Tables'):
-    tables=pd.read_sql('SELECT * FROM pg_catalog.pg_tables;', engine)
-    tables
+# if st.toggle('Show Tables'):
+#     tables=pd.read_sql('SELECT * FROM pg_catalog.pg_tables;', engine)
+#     tables
 
-filter_columns='"SiteId", "SiteName", "AlarmName", "FormattedDatetime", "AlarmInfo", "FilterIdentifier"'
+filter_columns='"SiteId", "SiteName", "AlarmName", "FormattedDatetime", "AlarmInfo", "FilterIdentifier", "FilterDate"'
 database_columns ='"SiteId", "Office", "2G_Cells", "3G_Cells", "4G_Cells", "Cascaded"'
 filters = get_data(filter_columns,filter_table)
 sites_database = get_data(database_columns, database_table)
@@ -71,6 +80,21 @@ n_df = pd.merge(filters, sites_database, on ='SiteId', how ='left')
 #======= Create Site Filter Identifier ========#
 
 n_df['SiteFilterIdentifier'] = n_df[['SiteId', 'FilterIdentifier']].agg('-'.join, axis=1)
+
+#======= Filter by Date ========#
+
+
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+
+with col6:
+    st.markdown('<p class="date-select">Select Date</p>', unsafe_allow_html = True)
+
+with col7:
+    selected_date = st.selectbox('', options=n_df['FilterDate'].unique(), index= len(n_df['FilterDate'].unique())-1, label_visibility='collapsed')
+    n_df = n_df.query(
+    "FilterDate == @selected_date"
+    )
+
 
 #======= Dataframes ========#
 
@@ -119,32 +143,43 @@ expected_ava= 100-(((final_total_down_cells)*100)/(nokia_cells*48))
 
 #======= Main Page ========#
 
-left_column, middle_column, right_column = st.columns(3)
+title_col, emp_col, last_filter_col, down_cells_col, down_sites_col, expected_ava_col = st.columns([1,0.2,1,1,1,1])
 
-with left_column:
-    st.subheader("Total Down Cells")
-    st.subheader(f" {int(final_total_down_cells)}")
-with middle_column:
-    st.subheader("Unique Down Sites")
-    st.subheader(f"{int(final_total_down_sites)}")
-with right_column:
-    st.subheader("Expected Availability")
-    st.subheader(f"{round(expected_ava, 2)} %")
+
+with title_col:
+    st.markdown('<p class="dashboard_title">Hourly<br>Dashboard</p>', unsafe_allow_html = True)
+
+with last_filter_col:
+    with st.container():
+        st.markdown(f'<p class="cont_text">Recent Filter<br></p><p class="cont_details">{n_df["FilterIdentifier"].unique().max()[15:20]}</p>', unsafe_allow_html = True)
+with down_cells_col:
+    with st.container():
+        st.markdown(f'<p class="cont_text">Sum of Down Cells<br></p><p class="cont_details">{int(final_total_down_cells)}</p>', unsafe_allow_html = True)
+
+with down_sites_col:
+    with st.container():
+        st.markdown(f'<p class="cont_text">Unique Down Sites<br></p><p class="cont_details">{int(final_total_down_sites)}</p>', unsafe_allow_html = True)
+
+with expected_ava_col:
+    with st.container():
+        st.markdown(f'<p class="cont_text">Expected Availability<br></p><p class="cont_details">{round(expected_ava, 2)}%</p>', unsafe_allow_html = True)
+
+
+
 st.text('Curent Uploaded Filters')
 tagger_component(
     "",
-    filters['FilterIdentifier'].str[4:].unique(),
-    color_name= random.sample(violet_color, len(filters['FilterIdentifier'].unique()))
+    n_df['FilterIdentifier'].str[4:].unique(),
+    color_name= random.sample(violet_color, len(n_df['FilterIdentifier'].unique()))
 )
 colored_header(
         label="",
         description="",
-        color_name="violet-70",
+        color_name="red-70",
 )
 
 
 
-st.write('All Filters Analysis')
 
 n_df_down_pivot= pd.pivot_table(n_df_down_all, values='SiteName', index='FilterIdentifier', columns='AlarmName', aggfunc='count')
 n_df_down_pivot = n_df_down_pivot.reset_index(drop = False)
@@ -295,7 +330,6 @@ plot.update_yaxes(showticklabels=False)
 st.plotly_chart(plot, use_container_width=True)
 
 
-
 n_df_down_sites_vs_aging_pivot= pd.pivot_table(n_df_down_filtered, values=['DownHours'], index='SiteId', aggfunc='max')
 n_df_down_sites_vs_aging_pivot = n_df_down_sites_vs_aging_pivot.reset_index(drop = False)
 n_df_down_sites_vs_aging_pivot=n_df_down_sites_vs_aging_pivot.sort_values(by='DownHours', ascending=False)
@@ -406,10 +440,10 @@ environmental_fig.update_layout(
 st.plotly_chart(environmental_fig, use_container_width=True)
 down_sites = down_sites.reset_index(drop=False)
 
-pyg_html = pyg.to_html(down_sites)
+# pyg_html = pyg.to_html(down_sites)
  
-# Embed the HTML into the Streamlit app
-components.html(pyg_html, height=1000, scrolling=True)
+# # Embed the HTML into the Streamlit app
+# components.html(pyg_html, height=1000, scrolling=True)
 
 #-- End of Environmental Alarms--#
 if st.button('View Data'):

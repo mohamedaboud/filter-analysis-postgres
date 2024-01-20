@@ -44,20 +44,14 @@ with st.form("my_form"):
    t = st.slider("Select Time of Filter", min_value=time(00, 00), max_value=time(23, 59))
    uploaded_file=st.file_uploader('Upload The File')
 
-
-
    submitted = st.form_submit_button("Submit")
    if uploaded_file is not None:
-    # st.write('Date:', d)
-    # st.write('Time:', t)
     if submitted:
-        # st.write(uploaded_file.file_id)
-        # st.write(uploaded_file.name)
-        # st.write(uploaded_file.size)
-        # st.write(uploaded_file.type)
         n_df=pd.read_excel(io=uploaded_file, engine= 'xlrd', skiprows=1, usecols='B:H')
+        #======= Add Date Column ========#
+        n_df['FilterDate']=d
         #======= Change columns names ========#
-        n_df.columns = ['SiteName', 'Severity', 'AlarmName', 'AlarmTime', 'AlarmId', 'AlarmSn', 'AlarmInfo']
+        n_df.columns = ['SiteName', 'Severity', 'AlarmName', 'AlarmTime', 'AlarmId', 'AlarmSn', 'AlarmInfo', 'FilterDate']
         #======= Delete NA values in SiteName ========#
         n_df=n_df.dropna(subset=['SiteName'])
 
