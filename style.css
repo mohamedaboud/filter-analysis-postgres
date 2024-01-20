@@ -9,6 +9,10 @@ html, body, span, [class*="css"] {
     font-family: 'Space Grotesk';
 }
 
+.seperator{
+    margin-top: 60px;
+}
+
 .date-select{
     margin: 0.5rem 0;
 }

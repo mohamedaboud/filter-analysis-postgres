@@ -39,7 +39,7 @@ colored_header(
         description="",
         color_name="red-70",
 )
-
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 identifier= 'remote_datbase_secrets'
 
 db_name=st.secrets[identifier]["db_name"]
@@ -166,17 +166,6 @@ with expected_ava_col:
 
 
 
-st.text('Curent Uploaded Filters')
-tagger_component(
-    "",
-    n_df['FilterIdentifier'].str[4:].unique(),
-    color_name= random.sample(violet_color, len(n_df['FilterIdentifier'].unique()))
-)
-colored_header(
-        label="",
-        description="",
-        color_name="red-70",
-)
 
 
 
@@ -190,6 +179,8 @@ n_df_down_pivot= n_df_down_pivot[["Time","2G","3G","4G"]]
 n_df_down_pivot["2G"] = np.where(n_df_down_pivot["2G"].isnull(), 0, n_df_down_pivot["2G"])
 n_df_down_pivot["3G"] = np.where(n_df_down_pivot["3G"].isnull(), 0, n_df_down_pivot["3G"])
 down_cells_per_filter['Time']=down_cells_per_filter.FilterIdentifier.str[15:20]
+
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 #======= Hourly Down Sites Graph ========#
 plot = go.Figure(data=[go.Scatter(
@@ -454,3 +445,19 @@ if st.button('View Data'):
     n_df_filtered
     environmental_df
     hub_environmental_df
+
+
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
+colored_header(
+        label="",
+        description="",
+        color_name="red-70",
+)
+st.text('Curent Uploaded Filters')
+tagger_component(
+    "",
+    n_df['FilterIdentifier'].str[4:].unique(),
+    color_name= random.sample(violet_color, len(n_df['FilterIdentifier'].unique()))
+)
+
+
