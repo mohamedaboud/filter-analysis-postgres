@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, text
 from streamlit_extras.tags import tagger_component
 import random
 
-st.set_page_config(page_title = "Upload Filter", page_icon=':bar_chart:', layout="wide")
+st.set_page_config(page_title = "Upload Filter", page_icon=':bar_chart:', initial_sidebar_state="collapsed", layout="wide")
 st.title(':watermelon: Upload Filter')
 
 

@@ -20,7 +20,7 @@ import streamlit.components.v1 as components
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-st.set_page_config(page_title = "Home Page", layout="wide")
+st.set_page_config(page_title = "Home Page", initial_sidebar_state="collapsed", layout="wide")
 
 # st.markdown(
 #     """
@@ -143,12 +143,15 @@ expected_ava= 100-(((final_total_down_cells)*100)/(nokia_cells*48))
 
 #======= Main Page ========#
 
-title_col, emp_col, last_filter_col, down_cells_col, down_sites_col, expected_ava_col = st.columns([1,0.2,1,1,1,1])
+#title_col, emp_col, last_filter_col, down_cells_col, down_sites_col, expected_ava_col = st.columns([1,0.2,1,1,1,1])
+filters_count_col, last_filter_col, down_cells_col, down_sites_col, expected_ava_col = st.columns(5)
 
 
-with title_col:
-    st.markdown('<p class="dashboard_title">Hourly<br>Dashboard</p>', unsafe_allow_html = True)
-
+# with title_col:
+#     st.markdown('<p class="dashboard_title">Hourly<br>Dashboard</p>', unsafe_allow_html = True)
+with filters_count_col:
+    with st.container():
+        st.markdown(f'<p class="cont_text">Total Filters<br></p><p class="cont_details">{len(n_df["FilterIdentifier"].unique())}</p>', unsafe_allow_html = True)
 with last_filter_col:
     with st.container():
         st.markdown(f'<p class="cont_text">Recent Filter<br></p><p class="cont_details">{n_df["FilterIdentifier"].unique().max()[15:20]}</p>', unsafe_allow_html = True)
@@ -183,49 +186,66 @@ down_cells_per_filter['Time']=down_cells_per_filter.FilterIdentifier.str[15:20]
 st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 #======= Hourly Down Sites Graph ========#
-plot = go.Figure(data=[go.Scatter(
-    name ='2G Down Sites',
-    x = n_df_down_pivot.Time,
-    y = n_df_down_pivot['2G'],
-    text=n_df_down_pivot['2G'],
-    showlegend=False,
-    mode = "lines+markers+text",
-    textposition='top center',
-   ),
-])
-plot.update_layout(
-    title={
-        'text': "Down Sites vs Time",
-        'y':0.9,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    )
-plot.update_traces(line=dict(width=4))
-st.plotly_chart(plot, use_container_width=True)
 
+
+with st.container():
+    fig = px.line(n_df_down_pivot, x="Time", y="2G", text="2G", markers=True)
+    fig.update_layout(title_text='Down Sites vs Time', title_x=0.5)
+    fig.update_xaxes(showgrid=True, )
+    fig.update_traces(textposition="top center")
+    st.plotly_chart(fig, use_container_width=True)
+
+# plot = go.Figure(data=[go.Scatter(
+#     name ='2G Down Sites',
+#     x = n_df_down_pivot.Time,
+#     y = n_df_down_pivot['2G'],
+#     text=n_df_down_pivot['2G'],
+#     showlegend=False,
+#     mode = "lines+markers+text",
+#     textposition='top center',
+#    ),
+# ])
+# plot.update_layout(
+#     title={
+#         'text': "Down Sites vs Time",
+#         'y':0.9,
+#         'x':0.5,
+#         'xanchor': 'center',
+#         'yanchor': 'top'},
+#     )
+# plot.update_traces(line=dict(width=4))
+# st.plotly_chart(plot, use_container_width=True)
+
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 #======= Hourly Down Cells Graph ========#
-plot = go.Figure(data=[go.Scatter(
-    name ='Down Cells',
-    x = down_cells_per_filter.Time,
-    y = down_cells_per_filter['final_total_down_cells'],
-    text=down_cells_per_filter['final_total_down_cells'],
-    showlegend=False,
-    mode = "lines+markers+text",
-    textposition='top center', 
-   ),
-])
-plot.update_layout(
-    title={
-        'text': "Down Cells vs Time",
-        'y':0.9,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    )
-plot.update_traces(line=dict(width=4))
-st.plotly_chart(plot, use_container_width=True)
+with st.container():
+    fig = px.line(down_cells_per_filter, x="Time", y="final_total_down_cells", text="final_total_down_cells", markers=True)
+    fig.update_layout(title_text='Down Cells vs Time', title_x=0.5)
+    fig.update_xaxes(showgrid=True, )
+    fig.update_traces(textposition="top center")
+    st.plotly_chart(fig, use_container_width=True)
+
+# plot = go.Figure(data=[go.Scatter(
+#     name ='Down Cells',
+#     x = down_cells_per_filter.Time,
+#     y = down_cells_per_filter['final_total_down_cells'],
+#     text=down_cells_per_filter['final_total_down_cells'],
+#     showlegend=False,
+#     mode = "lines+markers+text",
+#     textposition='top center', 
+#    ),
+# ])
+# plot.update_layout(
+#     title={
+#         'text': "Down Cells vs Time",
+#         'y':0.9,
+#         'x':0.5,
+#         'xanchor': 'center',
+#         'yanchor': 'top'},
+#     )
+# plot.update_traces(line=dict(width=4))
+# st.plotly_chart(plot, use_container_width=True)
 
 
 
@@ -257,6 +277,9 @@ down_sites = down_sites.reset_index(drop=True).set_index('Site ID').sort_values(
 #--- Down Sites Pivot And Graph---#
 n_df_down_sites_pivot= pd.pivot_table(n_df_down_filtered, values='SiteName', index='AlarmName', columns='Office', aggfunc='count')
 n_df_down_sites_pivot = n_df_down_sites_pivot.reset_index(drop = False)
+n_df_down_filtered
+n_df_down_sites_pivot
+
 
 plot = go.Figure(data=[go.Bar(
     name ='Banisuef',
@@ -453,11 +476,13 @@ colored_header(
         description="",
         color_name="red-70",
 )
-st.text('Curent Uploaded Filters')
-tagger_component(
+st.text('')
+
+
+with st.expander("Curent Uploaded Filters"):
+    tagger_component(
     "",
     n_df['FilterIdentifier'].str[4:].unique(),
     color_name= random.sample(violet_color, len(n_df['FilterIdentifier'].unique()))
-)
-
+    )
 

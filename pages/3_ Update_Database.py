@@ -10,7 +10,7 @@ from streamlit_extras.tags import tagger_component
 from annotated_text import annotated_text, annotation
 import random
 
-st.set_page_config(page_title = "Update Database", layout="wide")
+st.set_page_config(page_title = "Update Database", initial_sidebar_state="collapsed", layout="wide")
 st.title(':watermelon: Update Database')
 
 identifier= 'remote_datbase_secrets'
