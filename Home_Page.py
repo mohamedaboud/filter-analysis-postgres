@@ -254,12 +254,27 @@ with st.container():
 st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
+col1, col2, col3 = st.columns(3)
 
-st.write('Selected Filter Analysis')
+with col1:
+    st.markdown('<p class="dashboard_title">Single Selected Filter Analysis</p>', unsafe_allow_html = True)
+    # colored_header(
+    #         label="",
+    #         description="",
+    #         color_name="red-70",
+    # )
 
-selected_filter = st.selectbox('Select Filter', options=n_df['FilterIdentifier'].unique(), index= len(n_df['FilterIdentifier'].unique())-1)
+with col3:
+    selected_filter = st.selectbox('', options=n_df['FilterIdentifier'].unique(), index= len(n_df['FilterIdentifier'].unique())-1, label_visibility='collapsed')
+
 n_df_filtered = n_df.query(
     "FilterIdentifier == @selected_filter"
+)
+
+colored_header(
+        label="",
+        description="",
+        color_name="red-70",
 )
 
 n_df_filtered['TimeReference']= pd.to_datetime(n_df_filtered['FilterIdentifier'].str[4:14]+' '+ n_df_filtered['FilterIdentifier'].str[15:], format='%Y-%m-%d %H:%M:%S')
@@ -289,7 +304,7 @@ test.rename(columns = {"BTS O&M LINK FAILURE": "2G", "WCDMA BASE STATION OUT OF 
 
 
 with st.container():
-    fig = px.bar(test, x="Office", y=["2G", "3G"], text=["2G", "3G"], barmode='group')
+    fig = px.bar(test, x="Office", y=["2G", "3G"], barmode='group')
 
     st.plotly_chart(fig, use_container_width=True)
 
