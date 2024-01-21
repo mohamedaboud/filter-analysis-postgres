@@ -251,6 +251,8 @@ with st.container():
 
  ################################################################################################################################
 
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 
 st.write('Selected Filter Analysis')
@@ -273,39 +275,51 @@ down_sites.rename(columns = {"SiteId": "Site ID", "FormattedDatetime": "Alarm Ti
 down_sites = down_sites.reset_index(drop=True).set_index('Site ID').sort_values(by='Alarm Time', ascending=True)
 #---End of Final Down Sites DataFrams---#
 
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 #--- Down Sites Pivot And Graph---#
 n_df_down_sites_pivot= pd.pivot_table(n_df_down_filtered, values='SiteName', index='AlarmName', columns='Office', aggfunc='count')
 n_df_down_sites_pivot = n_df_down_sites_pivot.reset_index(drop = False)
-n_df_down_filtered
-n_df_down_sites_pivot
+
+test= pd.pivot_table(n_df_down_filtered, values='SiteName', index='Office', columns='AlarmName', aggfunc='count')
+test = test.reset_index(drop = False)
+test.rename(columns = {"BTS O&M LINK FAILURE": "2G", "WCDMA BASE STATION OUT OF USE": "3G"}, inplace = True)
 
 
-plot = go.Figure(data=[go.Bar(
-    name ='Banisuef',
-    x = n_df_down_sites_pivot.AlarmName,
-    y = n_df_down_sites_pivot.Banisuief,
-    text=n_df_down_sites_pivot.Banisuief,
-    marker_color='#2553d2'
-   ),
-    go.Bar(
-    name ='Fayoum',
-    x = n_df_down_sites_pivot.AlarmName,
-    y = n_df_down_sites_pivot.Fayoum,
-    text=n_df_down_sites_pivot.Fayoum,
-    marker_color='#e61d61'
-   )
-])
-plot.update_layout(
-    title={
-        'text': "Down Sites Per Office",
-        'y':0.9,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-    )
-plot.update_yaxes(showticklabels=False)
-st.plotly_chart(plot, use_container_width=True)
+
+
+with st.container():
+    fig = px.bar(test, x="Office", y=["2G", "3G"], text=["2G", "3G"], barmode='group')
+
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+# plot = go.Figure(data=[go.Bar(
+#     name ='Banisuef',
+#     x = n_df_down_sites_pivot.AlarmName,
+#     y = n_df_down_sites_pivot.Banisuief,
+#     text=n_df_down_sites_pivot.Banisuief,
+#     marker_color='#2553d2'
+#    ),
+#     go.Bar(
+#     name ='Fayoum',
+#     x = n_df_down_sites_pivot.AlarmName,
+#     y = n_df_down_sites_pivot.Fayoum,
+#     text=n_df_down_sites_pivot.Fayoum,
+#     marker_color='#e61d61'
+#    )
+# ])
+# plot.update_layout(
+#     title={
+#         'text': "Down Sites Per Office",
+#         'y':0.9,
+#         'x':0.5,
+#         'xanchor': 'center',
+#         'yanchor': 'top'},
+#     )
+# plot.update_yaxes(showticklabels=False)
+# st.plotly_chart(plot, use_container_width=True)
 
 
 
@@ -476,8 +490,8 @@ colored_header(
         description="",
         color_name="red-70",
 )
-st.text('')
 
+hub_environmental_df
 
 with st.expander("Curent Uploaded Filters"):
     tagger_component(
