@@ -338,6 +338,7 @@ with st.container():
 # plot.update_yaxes(showticklabels=False)
 # st.plotly_chart(plot, use_container_width=True)
 
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 
 n_df_down_sites_vs_cells_pivot= pd.pivot_table(n_df_down_filtered, values=['final_2G', 'final_3G', 'totalCells'], index='SiteId', aggfunc='max')
@@ -375,6 +376,7 @@ plot.update_yaxes(showticklabels=False)
 with st.container():
     st.plotly_chart(plot, use_container_width=True)
 
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 n_df_down_sites_vs_aging_pivot= pd.pivot_table(n_df_down_filtered, values=['DownHours'], index='SiteId', aggfunc='max')
 n_df_down_sites_vs_aging_pivot = n_df_down_sites_vs_aging_pivot.reset_index(drop = False)
@@ -400,6 +402,7 @@ with st.container():
     st.plotly_chart(plot, use_container_width=True)
 #--- End Of Down Sites Pivot And Graphs---#
 
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 
 #---Final Down Cells DataFrame---#
@@ -416,7 +419,7 @@ down_cells = down_cells.reset_index(drop=True).sort_values(by='Alarm Time', asce
 
 
 #--- Down Cells Pivot And Graphs---#
-cells_fig = px.bar(final_down_cells_without_zero, x='SiteId', y='final_total_down_cells', text_auto='1s', color='SiteId', color_discrete_sequence=px.colors.qualitative.Vivid)
+cells_fig = px.bar(final_down_cells_without_zero, x='SiteId', y='final_total_down_cells', text_auto='1s', color='SiteId', color_discrete_sequence=px.colors.qualitative.Bold)
 
 cells_fig.update_layout(
     title={
@@ -429,7 +432,7 @@ cells_fig.update_layout(
         xaxis_title=None,
         yaxis_title=None,
         )
-cells_fig.update_xaxes(tickangle = 55, title_font = {"size": 20},)
+cells_fig.update_xaxes(tickangle = 55, title_font = {"size": 20}, showgrid=True,)
 cells_fig.update_yaxes(showticklabels=False)
 cells_fig.add_annotation(
         x=0.5,
@@ -452,6 +455,7 @@ cells_fig.add_annotation(
 with st.container():
     st.plotly_chart(cells_fig, use_container_width=True)
 
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 
 down_cells_table=n_df_filtered[['SiteId', 'Office', 'FilterIdentifier', 'totalCells','FormattedDatetime', 'Cascaded', 'DownHours']]
@@ -462,6 +466,7 @@ down_cells_table = down_cells_table.drop(down_cells_table[(down_cells_table['tot
 down_cells_pivot_table = pd.pivot_table(down_cells_table, index=['SiteId', 'Office'], aggfunc={'totalCells': 'max', 'FormattedDatetime': 'min', 'Cascaded':'max', 'DownHours':'max'})
 down_cells_pivot_table = down_cells_pivot_table.reset_index(drop = False).sort_values(by='totalCells', ascending=False)
 
+st.markdown('<div class="seperator"></div>', unsafe_allow_html = True)
 
 #-- Environmental Alarms--#
 
