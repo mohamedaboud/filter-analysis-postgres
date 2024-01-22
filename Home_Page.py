@@ -265,7 +265,9 @@ with col1:
     # )
 
 with col3:
-    selected_filter = st.selectbox('', options=n_df['FilterIdentifier'].unique(), index= len(n_df['FilterIdentifier'].unique())-1, label_visibility='collapsed')
+    selector = n_df['FilterIdentifier'].unique()
+    selector = np.sort(selector)
+    selected_filter = st.selectbox('', options=selector, index= len(n_df['FilterIdentifier'].unique())-1, label_visibility='collapsed')
 
 n_df_filtered = n_df.query(
     "FilterIdentifier == @selected_filter"
@@ -370,7 +372,8 @@ plot.update_layout(
         'yanchor': 'top'})
 plot.update_xaxes(tickangle = 90, title_font = {"size": 20},)
 plot.update_yaxes(showticklabels=False)
-st.plotly_chart(plot, use_container_width=True)
+with st.container():
+    st.plotly_chart(plot, use_container_width=True)
 
 
 n_df_down_sites_vs_aging_pivot= pd.pivot_table(n_df_down_filtered, values=['DownHours'], index='SiteId', aggfunc='max')
@@ -393,7 +396,8 @@ plot.update_layout(
 plot.update_traces(marker=dict(color = n_df_down_sites_vs_aging_pivot['DownHours'],
                      colorscale='viridis'),textfont_size=16)
 plot.update_yaxes(visible=False, showticklabels=False)
-st.plotly_chart(plot, use_container_width=True)
+with st.container():
+    st.plotly_chart(plot, use_container_width=True)
 #--- End Of Down Sites Pivot And Graphs---#
 
 
@@ -445,8 +449,8 @@ cells_fig.add_annotation(
         bgcolor="#642ca9",
         opacity=0.6
         )
-
-st.plotly_chart(cells_fig, use_container_width=True)
+with st.container():
+    st.plotly_chart(cells_fig, use_container_width=True)
 
 
 
@@ -467,21 +471,21 @@ environmental_df.rename(columns = {"AlarmInfo": "Alarm", "FormattedDatetime": "A
 
 hub_environmental_df = environmental_df[environmental_df['Cascaded'] > 30].sort_values(by='Cascaded', ascending=False)
 
-environmental_fig = px.bar(hub_environmental_df, y='SiteId', x='Aging', color='Alarm', text='Alarm', barmode='group', orientation='h', color_discrete_sequence=px.colors.qualitative.Prism)
-environmental_fig.update_layout(
-    title={
-        'text': "Hub Environmental Alarms",
-        'y':0.9,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-        showlegend=False,
-        xaxis_title=None,
-        yaxis_title=None,
-        )
+# environmental_fig = px.bar(hub_environmental_df, y='SiteId', x='Aging', color='Alarm', text='Alarm', barmode='group', orientation='h', color_discrete_sequence=px.colors.qualitative.Prism)
+# environmental_fig.update_layout(
+#     title={
+#         'text': "Hub Environmental Alarms",
+#         'y':0.9,
+#         'x':0.5,
+#         'xanchor': 'center',
+#         'yanchor': 'top'},
+#         showlegend=False,
+#         xaxis_title=None,
+#         yaxis_title=None,
+#         )
 
-st.plotly_chart(environmental_fig, use_container_width=True)
-down_sites = down_sites.reset_index(drop=False)
+# st.plotly_chart(environmental_fig, use_container_width=True)
+# down_sites = down_sites.reset_index(drop=False)
 
 # pyg_html = pyg.to_html(down_sites)
  
@@ -506,12 +510,12 @@ colored_header(
         color_name="red-70",
 )
 
-hub_environmental_df
+
 
 with st.expander("Curent Uploaded Filters"):
     tagger_component(
     "",
-    n_df['FilterIdentifier'].str[4:].unique(),
+    np.sort(n_df['FilterIdentifier'].str[4:].unique()),
     color_name= random.sample(violet_color, len(n_df['FilterIdentifier'].unique()))
     )
 
