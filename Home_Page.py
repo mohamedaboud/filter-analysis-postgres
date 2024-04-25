@@ -113,7 +113,6 @@ def add_cells_count(df):
 
 n_df=add_cells_count(n_df)
 
-
 @st.cache_data
 def v_lookup_data(df1, df2, df3):
     df1 = pd.merge(df1, df2[['SiteFilterIdentifier','AlarmName']], on ='SiteFilterIdentifier', how ='left')
